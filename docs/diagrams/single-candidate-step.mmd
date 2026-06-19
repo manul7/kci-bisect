@@ -1,0 +1,27 @@
+sequenceDiagram
+    autonumber
+    participant BCO as BCO
+    participant Store as BCO State store
+    participant Selector as Commit selector
+    participant BTO as Build-Test Orchestrator
+    participant Analyzer as Results Analyzer
+    participant Decision as Decision engine
+
+    BCO->>Store: Acquire campaign lease
+    BCO->>Store: Read campaign, steps, and next intended action
+    BCO->>Selector: Commit-selection request
+    Selector-->>BCO: One candidate commit
+    BCO->>Store: Create step and persist next intended action
+    BCO->>BTO: Submit build-test plan request with idempotency key
+    BTO-->>BCO: Plan ID
+    BCO->>Store: Persist plan attempt and await-plan action
+    BCO->>Store: Release campaign lease
+    BTO-->>BCO: Terminal-state notification
+    BCO->>Store: Re-acquire campaign lease
+    BCO->>BTO: Read final build-test plan result
+    BTO-->>BCO: Final build-test plan result
+    BCO->>Analyzer: Analyze plan output
+    Analyzer-->>BCO: Observations or performance evidence
+    BCO->>Decision: Evaluate evidence
+    Decision-->>BCO: good / bad / skip / weak with rationale
+    BCO->>Store: Persist attempt, decision, rationale, and next action

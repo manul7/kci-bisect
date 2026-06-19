@@ -1,0 +1,17 @@
+flowchart TD
+    Request["Campaign accepted"] --> Running["running"]
+    Running --> Work["Select candidate and route build/test/evidence/decision work"]
+    Work --> Continue{"Campaign can continue?"}
+
+    Continue -->|"next candidate needed"| Running
+    Continue -->|"candidate single culprit and verification requested"| Verifying["verifying"]
+    Continue -->|"final outcome without verification"| Completed["completed"]
+    Continue -->|"cannot continue"| Failed["failed"]
+
+    Verifying --> Verification["Run verification policy"]
+    Verification --> VerificationResult{"Verification result"}
+    VerificationResult -->|"confirmed / not confirmed / unusable"| Completed
+    VerificationResult -->|"verification cannot run"| Failed
+
+    Completed --> Store[("BCO State store records final outcome")]
+    Failed --> FailureStore[("BCO State store records failure reason")]

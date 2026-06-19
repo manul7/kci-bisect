@@ -1,0 +1,33 @@
+flowchart TD
+    StepState([Recorded step decisions<br/>and selector state])
+    Evaluate{"Can the search continue?"}
+    Continue["Continue running campaign"]
+    Outcome["Promote campaign outcome"]
+    VerificationPolicy{"Verification requested for candidate culprit?"}
+    Verifying["Set campaign status: verifying"]
+    Verifier(["Verifier"])
+    VerificationResult{"Verification result?"}
+    Completed["Set campaign status: completed"]
+    Failed["Set campaign status: failed"]
+    Store[("BCO State store<br/>record final outcome or failure")]
+    Output(["BCO output read model"])
+
+    StepState --> Evaluate
+
+    Evaluate -->|"new testable candidate exists"| Continue
+    Evaluate -->|"single culprit identified"| Outcome
+    Evaluate -->|"useful smaller range remains"| Outcome
+    Evaluate -->|"range cannot narrow usefully"| Outcome
+    Evaluate -->|"unrecoverable orchestration problem"| Failed
+
+    Outcome --> VerificationPolicy
+    VerificationPolicy -->|"no"| Completed
+    VerificationPolicy -->|"yes"| Verifying
+    Verifying --> Verifier
+    Verifier --> VerificationResult
+    VerificationResult -->|"confirmed / not confirmed / unusable"| Completed
+    VerificationResult -->|"verification cannot run"| Failed
+
+    Completed --> Store
+    Failed --> Store
+    Store --> Output

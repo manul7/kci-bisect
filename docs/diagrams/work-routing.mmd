@@ -1,0 +1,22 @@
+flowchart TD
+    %% Current default: no automatic retry; retry and exhausted are future/policy-enabled (oq-005).
+    Candidate([Candidate commit selected])
+    Plan["Submit build-test plan request"]
+    BTOExec["BTO executes build/test work"]
+    PlanResult{"Final build-test plan result category?"}
+    Analyze["Route plan output to Results Analyzer"]
+    Decision["Decision engine step decision<br/>qualification gate, then stage 2 evaluator"]
+    Persist[("BCO State store<br/>persist step or failure state")]
+    Failure["Record campaign failure reason"]
+
+    Candidate --> Plan
+    Plan --> BTOExec
+    BTOExec --> PlanResult
+
+    PlanResult -->|"content_result"| Analyze
+    PlanResult -->|"infrastructure_failure"| Failure
+    PlanResult -->|"invalid_request"| Failure
+
+    Analyze --> Decision
+    Decision -->|"good / bad / skip / weak"| Persist
+    Failure --> Persist

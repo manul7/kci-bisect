@@ -1,0 +1,27 @@
+sequenceDiagram
+    autonumber
+    participant Trigger as External trigger
+    participant BCO as BCO
+    participant Registry as Trigger registry
+    participant Profile as Campaign execution profile
+    participant Store as BCO State store
+
+    Trigger->>BCO: Submit Campaign Request JSON
+    BCO->>Registry: Authenticate trigger
+    BCO->>BCO: Validate request shape and required fields
+    BCO->>BCO: Check good and bad boundary fields are present
+    BCO->>BCO: Resolve composition name (CR or default)
+    BCO->>Profile: Check deployment capability (regression type, search policy, composition, evidence path)
+    alt unsupported capability or incomplete request
+        BCO-->>Trigger: Reject with validation errors
+    else request accepted by capability checks
+        BCO->>BCO: Compute campaign equivalence key
+        BCO->>Store: Atomic create or join by equivalence key
+        alt equivalent campaign exists
+            Store-->>BCO: Existing active or completed campaign reference
+            BCO-->>Trigger: Return existing campaign reference
+        else new campaign
+            Store-->>BCO: Campaign created in running state
+            BCO-->>Trigger: Campaign accepted
+        end
+    end

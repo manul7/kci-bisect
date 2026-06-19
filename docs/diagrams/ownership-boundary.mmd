@@ -1,0 +1,43 @@
+flowchart TD
+    ScopeQuestion([Question: Where does BCO responsibility start and stop?])
+
+    subgraph Owned["Owned by BCO"]
+        Admit["Admit campaign request"]
+        PreventDuplicate["Prevent duplicate campaign"]
+        DriveLifecycle["Drive campaign lifecycle"]
+        RouteWork["Route work between components"]
+        ApplyPolicies["Apply retry/resource policy"]
+        Recover["Recover from persisted next action"]
+        Promote["Promote campaign outcome"]
+    end
+
+    subgraph Delegated["Not owned by BCO"]
+        Detect(["External trigger<br/>detects regression and chooses initial boundaries"])
+        Select(["Commit selector<br/>resolves boundaries and selects candidates"])
+        Execute(["BTO<br/>creates backend plan and executes build/test work"])
+        Analyze(["Results Analyzer<br/>emits normalized evidence"])
+        Decide(["Decision engine<br/>returns step decision"])
+        Verify(["Verifier<br/>executes verification policy"])
+    end
+
+    Store[("BCO State store<br/>durable campaign, step, lease, attempt, outcome records")]
+
+    ScopeQuestion -->|"owned actions"| Admit
+    Admit --> PreventDuplicate
+    PreventDuplicate --> DriveLifecycle
+    DriveLifecycle --> RouteWork
+    RouteWork --> ApplyPolicies
+    ApplyPolicies --> Recover
+    Recover --> Promote
+
+    Detect -. "provides complete request" .-> Admit
+    RouteWork -. "requests candidate(s)" .-> Select
+    RouteWork -. "submits build-test plan request" .-> Execute
+    RouteWork -. "sends terminal plan output" .-> Analyze
+    RouteWork -. "sends normalized evidence" .-> Decide
+    Promote -. "hands candidate outcome" .-> Verify
+
+    Admit -->|"create campaign"| Store
+    DriveLifecycle -->|"persist progress"| Store
+    Recover -->|"read next action and lease"| Store
+    Promote -->|"persist outcome"| Store

@@ -1,0 +1,22 @@
+sequenceDiagram
+    autonumber
+    participant BCO as BCO
+    participant Store as BCO State store
+    participant BTO as Build-Test Orchestrator
+
+    BCO->>Store: Acquire campaign lease
+    Store-->>BCO: Campaign record, steps, attempts, next intended action
+    alt next action has not been sent downstream
+        BCO->>BTO: Submit plan with idempotency key
+        BTO-->>BCO: Plan ID or existing plan reference
+        BCO->>Store: Persist plan reference and attempt state
+    else plan is awaiting terminal result
+        BCO->>BTO: Read final build-test plan result
+        alt plan reached terminal result
+            BTO-->>BCO: Final build-test plan result
+            BCO->>Store: Persist result and continue from next action
+        else terminal result unavailable or plan not found (lookup status contract TBD)
+            BTO-->>BCO: No terminal result available
+            BCO->>Store: Fail under no-retry default, or retry per policy (oq-005)
+        end
+    end
