@@ -1,0 +1,21 @@
+{
+  "theme": "base",
+  "flowchart": {
+    "defaultRenderer": "elk",
+    "curve": "basis",
+    "htmlLabels": true,
+    "nodeSpacing": 40,
+    "rankSpacing": 55
+  },
+  "sequence": {
+    "mirrorActors": false
+  },
+  "themeVariables": {
+    "fontFamily": "Arial, sans-serif",
+    "primaryColor": "#E8F1FA",
+    "primaryBorderColor": "#2F6FA3",
+    "primaryTextColor": "#1F2933",
+    "lineColor": "#52616B",
+    "tertiaryColor": "#F7F9FB"
+  }
+}

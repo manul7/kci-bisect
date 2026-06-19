@@ -1,0 +1,19 @@
+sequenceDiagram
+    autonumber
+    participant BCO as BCO
+    participant BTO as BTO
+    participant Store as BTO State store
+    participant Exec as Execution (composition-internal)
+
+    BCO->>BTO: Submit build-test plan request (composition name)
+    BTO->>Store: Deduplicate plan request
+    BTO-->>BCO: Plan identity
+
+    Note over BTO,Exec: Composition resolution and role call pattern are BTO-internal
+    BTO->>Exec: Execute build/test for the composition
+    Exec-->>BTO: Completed execution output
+
+    BTO->>Store: Preserve final build-test plan result
+    BTO-->>BCO: Terminal-state notification
+    BCO->>BTO: Read final build-test plan result
+    BTO-->>BCO: Final build-test plan result
