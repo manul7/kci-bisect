@@ -1,0 +1,29 @@
+flowchart TD
+    Raw["Terminal plan output"] --> Analyzer["Results Analyzer"]
+    Analyzer --> ParseSet["parse_error observation set"]
+    Analyzer --> QualSet["observation set with qualification observation"]
+    Analyzer --> PerfEv["qualified performance evidence"]
+
+    ParseSet -->|"strategy maps directly, outside the gate"| SkipParse["skip (parse_error)"]
+
+    QualSet --> Qualify{"Stage 1: qualified?"}
+    Qualify -->|"no: not_built / not_booted / did_not_run / crashed"| SkipQual["skip (qualification reason)"]
+    Qualify -->|"yes"| EvalBinary["Stage 2: binary strategy"]
+
+    PerfEv --> EvalPerf["Stage 2: performance strategy"]
+
+    EvalBinary --> Good["good"]
+    EvalBinary --> Bad["bad"]
+    EvalBinary --> Weak["weak"]
+    EvalBinary --> SkipEval["skip (evidence unusable)"]
+    EvalPerf --> Good
+    EvalPerf --> Bad
+    EvalPerf --> Weak
+    EvalPerf --> SkipEval
+
+    SkipParse --> Rationale["Rationale with evidence references"]
+    SkipQual --> Rationale
+    Good --> Rationale
+    Bad --> Rationale
+    Weak --> Rationale
+    SkipEval --> Rationale
