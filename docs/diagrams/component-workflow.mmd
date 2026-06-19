@@ -1,0 +1,23 @@
+flowchart TD
+    Request["Campaign request"] --> Admission["BCO admission"]
+    Admission -->|"authenticate trigger"| TriggerRegistry["Trigger registry"]
+    Admission -->|"validate shape / required fields"| CampaignContract["Campaign request contract"]
+    Admission -->|"check deployment capability"| Profile["Campaign execution profile"]
+    Admission -->|"atomic create by equivalence key"| StateStore[("BCO State store")]
+
+    StateStore -->|"campaign record"| Running["Running campaign"]
+    Running -->|"commit-selection request"| CommitSelector["Commit selector"]
+    CommitSelector -->|"boundary resolution and history query"| Git["Git source tree"]
+    CommitSelector -->|"commit-selection result"| Running
+
+    Running -->|"build-test plan request (composition name)"| BTO["Build-Test Orchestrator"]
+    BTO -->|"preserve plan progress and final result"| BTOStore[("BTO State store")]
+    BTO -->|"final build-test plan result"| Running
+
+    Running -->|"plan result + expected signal + scope + step context"| ResultsAnalyzer["Results Analyzer"]
+    ResultsAnalyzer -->|"qualification + observations or performance evidence"| Running
+    Running -->|"evidence + strategy + scope + step context"| DecisionEngine["Decision engine"]
+    DecisionEngine -->|"good / bad / skip / weak + rationale"| Running
+
+    Running -->|"persist step, attempt, decision, rationale, next action"| StateStore
+    Running -->|"final outcome"| Output["BCO output (read model)"]

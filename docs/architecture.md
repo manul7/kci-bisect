@@ -8,84 +8,113 @@
 2. **Composable** — building blocks that can be assembled differently
 3. **Pluggable backends** — swap build/test/storage backends
 4. **Reproducible** — deterministic builds and tests across bisection steps
-5. **Reuse over reinvention** — wrap existing open-source tools
-   (TuxMake, TuxRun, LAVA, git-bisect, logspec, ...) behind the
-   component interfaces rather than reimplementing them. Define the
-   interface first so tool choice stays swappable; contribute upstream
-   over forking.
+5. **Reuse over reinvention** — wrap existing open-source tools behind component interfaces rather
+   than reimplementing them. Define the interface first so tool choice stays swappable; contribute
+   upstream over forking.
 
-## Proposed Building Blocks
+## Bisect Workflow Entry
 
-These are the components identified from existing implementations. The
-interfaces and boundaries are TBD.
+The bisection system starts at campaign admission. BCO accepts a Campaign Request from a registered
+trigger, rejects requests that cannot run, and uses the equivalence key to avoid duplicate
+campaigns.
+
+## Components
+
+The system decomposes into the components below, grouped by area. This section is a high-level map;
+the detailed component catalog lives in [components](components.md).
+
+![System boundary](diagrams/system-boundary.svg)
 
 ### Core
 
-- **Bisection loop** — drives git bisect (or n-bisect), manages state,
-  handles good/bad/skip decisions
-- **Commit selector** — given a range, selects which commit(s) to test
-  next (single midpoint for standard bisect, N evenly-spaced for n-bisect)
+- Bisection Campaign Orchestrator, BCO - owns campaign admission, lifecycle, routing, retry policy,
+  and outcome promotion.
 
-### Build
+- Build-Test Orchestrator, BTO - executes build/test work for candidates selected by BCO. Runs as
+  a separate service/process with its own lifecycle and plan-execution internals. Runtime
+  execution composition and sub-component interactions are internal to BTO.
 
-- **Build step** — triggers a kernel build for a given commit
-  - Backends: TuxMake (local/container), Maestro /api/checkout, custom
-- **Build cache** — checks whether a build already exists before building
-  - Cache key: (commit, arch, defconfig, toolchain, config_full)
+- Commit selector — chooses the next commit(s) to test according to the campaign search policy.
 
-### Test
+### BCO Internals
 
-- **Test step** — runs a test against a built kernel
-  - Backends: TuxRun (QEMU), LAVA (hardware), custom
-- **Result parser** — extracts structured signals from test output
-  (pass/fail flags, error signatures, measured metrics). Deterministic
-  extraction only; no verdict.
-  - Integration: logspec for error signature matching
+- Campaign admission — authenticates triggers, validates Campaign Requests, checks deployment
+  capability, and creates or joins campaigns.
 
-### Decision engine
+- Campaign executor — coordinates commit selection, BTO work, evidence routing, decision
+  recording, retry policy, recovery, and outcome promotion.
 
-- **Decision engine** — maps parsed signals to a step decision:
-  `good` / `bad` / `skip` / `weak`. Separated from `Result parser` so that decision rules can evolve independently of signal extraction.
-  - Strategies:
-    - **binary** — presence/absence of an error signature
-      (build, boot, config, unit-test failures)
-    - **threshold / statistical** — regression decision on a continuous
-      metric, possibly over multiple repetitions (performance)
-  - `skip` (cannot test at this commit, e.g. build broken pre-existing)
-    is distinct from `weak` (tested but evidence uncertain)
+### BTO Internals
 
-### Reporting
+- BT Planner — creates backend-executable build/test intents from build-test plan requests.
 
-- **Report generator** — produces bisection report (culprit,
-  verification result, bisection log)
-- **Recipient finder** — determines who to notify
-  (get_maintainers.pl, commit trailers, Lore mbox lookup)
-- **Report sender** — delivers the report (email, API, etc.)
+- Build runner - builder role that attempts to produce a kernel build for a given build
+  identity.
+
+- Test runner — tester role that runs a test against a built kernel.
+
+- Build cache — optional capability for reusing previously produced build artifacts.
+
+- Artifact store — optional storage for build artifacts handed off between separate builder and
+  tester instances.
+
+### Analysis And Decision
+
+- Results Analyzer — converts terminal plan output into evidence consumed by the Decision engine.
+
+- Decision engine — applies the configured decision strategy to map a step's evidence to a step
+  decision.
 
 ### Verification
 
-- **Verify step** — confirms the culprit by reverting and retesting
+- Verifier — applies the campaign verification policy to a candidate single-culprit outcome.
+
+### Reporting
+
+- Report generator — produces a bisection report from campaign records and final outcome.
+
+- Recipient finder — derives the recipient list from the culprit commit.
+
+- Report sender — sends a report to its recipients through a configured channel.
 
 ### State
 
-- **State store** — persists bisection progress for auditability and
-  resumability. Data model:
-  - **Campaign** — one bisection investigation, bounded by a fixed
-    scope and known good/bad boundaries
-  - **Step** — one tested commit inside a campaign; records tested
-    commit, build and test evidence, decision
-    (`good` / `bad` / `skip` / `weak`), and rationale.
-  - Backends: local file (JSON, SQLite), KCIDB, custom
+- Trigger registry — stores registered trigger identities, admission credentials, and per-trigger
+  execution settings used by BCO admission.
 
-## Integration Points
+- BCO State store — stores BCO-owned campaign, step, attempt, evidence, decision, lease, trigger,
+  and outcome records.
 
-These are KernelCI-specific and should be separate from the generic core:
+- BTO State store — stores BTO-owned plan execution state.
 
-- [Maestro](https://docs.kernelci.org/components/maestro/) regression detection -> bisection trigger
-- Maestro /api/checkout -> build + test execution
-- KCIDB -> historical result lookup
-- kci-dev CLI-> developer-facing interface
+## Workflows
+
+![Component workflow](diagrams/component-workflow.svg)
+
+### Normal campaign path is
+
+1. A trigger submits a Campaign Request to BCO.
+2. BCO authenticates the trigger through the Trigger registry, validates the request, and records
+   campaign state in the BCO State store.
+3. BCO asks the Commit selector for the next candidate commit.
+4. BCO submits build/test work to BTO for the selected candidate.
+5. Inside BTO, the selected composition maps planner, builder, and tester roles to runtime
+   instances. BTO chooses the call pattern from those instances and their capabilities.
+6. When builder and tester roles use separate instances, BTO uses the Artifact store only if an
+   artifact handoff is needed. Build cache, when enabled, sits behind BTO and is not called by BCO.
+7. BTO notifies BCO when the work reaches a terminal state. BCO reads the terminal result from BTO.
+8. BCO sends terminal plan output to the Results Analyzer.
+9. BCO sends normalized evidence to the Decision engine and records the returned step decision.
+10. BCO repeats commit selection and build/test execution until the campaign reaches a final
+    outcome or cannot continue.
+
+### Optional paths
+
+- Verifier runs only when BCO has a candidate single-culprit outcome and the campaign requested
+  verification.
+- Reporting components consume BCO campaign output or final outcome; they do not drive bisection
+  execution.
 
 ## Open Questions
 
-List of open questions is tracked in [../oq.md](../oq.md).
+List of open questions is tracked in [open questions](../oq.md).

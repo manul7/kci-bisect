@@ -1,0 +1,53 @@
+flowchart LR
+    Trigger["External trigger<br/>operator / bot / pipeline"] -->|"Campaign Request JSON"| BCO
+
+    subgraph System["Linux kernel bisection system"]
+        subgraph BCOService["BCO service"]
+            BCO["BCO"]
+            Admission["Campaign admission"]
+            Executor["Campaign executor"]
+            Scanner["Plan status scanner"]
+        end
+
+        TriggerRegistry["Trigger registry"]
+        CommitSelector["Commit selector"]
+        ResultsAnalyzer["Results Analyzer"]
+        DecisionEngine["Decision engine"]
+        Verifier["Verifier"]
+        Reporting["Reporting components"]
+
+        subgraph BTOService["BTO service"]
+            BTO["Build-Test Orchestrator"]
+            BTPlanner["BT Planner"]
+            BuildRunner["Build runner"]
+            TestRunner["Test runner"]
+            BuildCache["Build cache (optional)"]
+            ArtifactStore["Artifact store (optional)"]
+        end
+
+        BCOStore[("BCO State store")]
+        BTOStore[("BTO State store")]
+    end
+
+    CommitSelector -->|"resolve boundaries / query history"| Git["Git source tree"]
+    BTO -->|"resolves composition to internal roles"| BTPlanner
+    BTPlanner --- BuildRunner
+    BTPlanner --- TestRunner
+    BuildRunner -.->|"optional"| BuildCache
+    BuildRunner -.->|"optional handoff"| ArtifactStore
+    TestRunner -.->|"optional handoff"| ArtifactStore
+    BTO --> BTOStore
+    Reporting -->|"deliver report"| ReportTarget["Report target"]
+
+    BCO --> Admission
+    BCO --> Executor
+    BCO --> Scanner
+    Admission --> TriggerRegistry
+    Admission --> BCOStore
+    BCO --> BCOStore
+    BCO --> CommitSelector
+    BCO --> BTO
+    BCO --> ResultsAnalyzer
+    BCO --> DecisionEngine
+    BCO --> Verifier
+    BCO --> Reporting
