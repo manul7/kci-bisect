@@ -8,13 +8,13 @@ Reference data model for the State store (see [architecture.md](./architecture.m
 Each bisection campaign fixes a set of dimensions so that the kernel commit is the only changing variable.
 Which dimensions matter depends on the regression type:
 
-| Regression type | Fixed-scope dimensions                            |
-|-----------------|---------------------------------------------------|
-| Build           | arch, defconfig, toolchain                        |
-| Boot            | arch, defconfig, toolchain, device/VM             |
-| Config          | arch, base defconfig, toolchain                   |
-| Unit-test       | arch, defconfig, toolchain, test suite, test case |
-| Performance     | SUT profile, workload configuration, metric       |
+| Regression type | Fixed-scope dimensions                                            |
+|-----------------|-------------------------------------------------------------------|
+| Build           | arch, defconfig, toolchain                                        |
+| Boot            | arch, defconfig, toolchain, device/VM                             |
+| Config          | arch, base defconfig, toolchain                                   |
+| Unit-test       | arch, defconfig, toolchain, test suite, test case                 |
+| Performance     | SUT profile, kernel configuration, toolchain, workload configuration, metric |
 
 Admission uses this table to check that campaign scope is complete for the regression type. For
 performance, the `metric` dimension is carried by the campaign request `expected_signal.metric`, not
@@ -91,5 +91,9 @@ A step can have multiple attempts. BCO records both identifiers for each attempt
 - `attempt_number`: ordinal within the step, used on the execution path and encoded in the
   build-test plan `idempotency_key`.
 - `attempt_id`: durable record ID used on the evidence and decision path.
+- `execution_status`: whether the build-test plan was submitted or reached its terminal result.
+- `execution_environments`: configured build and test environment references copied from the
+  terminal plan result when external work ran.
+- `plan references`: BTO request, plan, and terminal-result references for the attempt.
 
 Both identify the same attempt.
