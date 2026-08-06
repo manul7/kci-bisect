@@ -56,17 +56,24 @@ support. The architecture needs one place where limits are declared and enforced
 
 ### oq-005
 
-**Problem:** Some failures are not reliable step evidence. The system needs a policy for deciding
-whether to retry, re-run, skip, or fail when execution or evidence is inconclusive.
+**Problem:** Some failures do not produce trustworthy step evidence. In particular, a build-test
+plan `infrastructure_failure` cannot produce a Decision engine step decision. BCO may re-execute the
+same step when a retry policy allows; after attempts are exhausted, it must either fail the campaign
+or close the step without a decision and project a selector mark for the candidate.
 
-**Question:** Which events can trigger re-execution, and how is retry exhaustion represented?
+**Question:** Which BCO-visible events can trigger another attempt, and after the attempt limit does
+BCO fail the campaign or mark the step `exhausted` and project `selector_mark: "skip"`?
+
+**Status:** Current component drafts model an `exhausted` step and project
+`selector_mark: "skip"`.
 
 **Possible answers:**
 
-- No automatic retry; all inconclusive states are recorded as final step or campaign state.
-- Retry only infrastructure-attributed failures.
-- Retry infrastructure-attributed failures and `weak` decisions.
-- Support named retry policies with explicit exhaustion outcomes.
+- No automatic retry; an event that prevents a step decision fails the campaign.
+- Retry only `infrastructure_failure`; exhaustion fails the campaign.
+- Retry only `infrastructure_failure`; exhaustion marks the step `exhausted` and BCO projects
+  `selector_mark: "skip"`.
+- Also retry `weak` decisions or failed Results Analyzer or Decision engine attempts.
 
 ### oq-006
 
