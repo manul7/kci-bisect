@@ -57,13 +57,11 @@ the request:
 - evidence `metric.baseline_value` matches the caller-supplied
   `expected_signal.baseline_value` (the analyzer must use the baseline the campaign declared).
 
-The scope dimensions relevant to performance comparability are the SUT profile and the workload
-(`scope.sut` and `scope.workload`, including `workload.configuration`), per the performance row of
-the regression-type scope table in [bisection-data-model](../bisection-data-model.md). Build-identity
-dimensions (architecture, kernel configuration, toolchain) are held constant by campaign scope — for
-`performance` the SUT profile carries the architecture, which in turn defines the toolchain — and are
-not part of this match unless a deployment declares them comparability-relevant. Metric identity is
-matched separately through `metric.name` and `metric.unit`.
+The scope dimensions relevant to performance comparability are the SUT profile, kernel
+configuration, toolchain, and workload (`scope.sut`, `scope.kernel_config`, `scope.toolchain`, and
+`scope.workload`, including `workload.configuration`), per the performance row of the regression-type
+scope table in [bisection-data-model](../bisection-data-model.md). Metric identity is matched
+separately through `metric.name` and `metric.unit`.
 
 If evidence does not match the request, the result is `skip` with one of the skip reasons
 defined under "Skip Reasons" below.

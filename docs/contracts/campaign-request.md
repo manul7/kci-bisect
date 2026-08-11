@@ -235,6 +235,21 @@ unknown, or not associated with usable execution settings.
 Admission validates the request body against this contract and the selected campaign execution
 profile (see [campaign-execution-profile](campaign-execution-profile.md)).
 
+## Admission Success
+
+Admission returns the same shape after creating a campaign or joining an equivalent campaign:
+
+```json
+{
+  "campaign_ref": "CAMPAIGN_ID",
+  "created": true
+}
+```
+
+- `campaign_ref`: stable campaign identity.
+- `created`: `true` when admission created the campaign; `false` when the trigger joined an
+  equivalent campaign.
+
 ## Admission Rejection
 
 When admission rejects a request, the response uses shape like this:

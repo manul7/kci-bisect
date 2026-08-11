@@ -48,7 +48,7 @@ decide `good` vs `bad`, or call build/test execution services directly.
   [build-test-plan-request](contracts/build-test-plan-request.md).
 - BCO campaign output as defined by [bco-output](contracts/bco-output.md).
 - Admission rejection result with validation errors, returned synchronously to the trigger when
-  no campaign is created. Not persisted as a campaign record.
+  admission fails. Not persisted as a campaign record.
 
 **Detailed design:** [bco](components/bco.md).
 

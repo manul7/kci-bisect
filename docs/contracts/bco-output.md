@@ -19,6 +19,11 @@ orchestration cursors stay in the State store unless consumers need them.
   "campaign": {
     "campaign_id": "CAMPAIGN_ID",
     "status": "completed",
+    "timestamps": {
+      "accepted_at": "TIMESTAMP",
+      "started_at": "TIMESTAMP",
+      "terminal_at": "TIMESTAMP"
+    },
     "regression_type": "REGRESSION_TYPE",
     "source_tree": {
       "url": "SOURCE_REPO_URL"
@@ -138,6 +143,7 @@ Required fields:
 
 - `campaign_id`: BCO-assigned campaign identity.
 - `status`: current campaign lifecycle status.
+- `timestamps.accepted_at`: time admission durably created the campaign.
 - `regression_type`: admitted regression type.
 - `source_tree`: source repository identity.
 - `search_boundaries.initial`: admitted good and bad search boundaries.
@@ -153,13 +159,19 @@ as [campaign request](campaign-request.md).
 
 `regression_type` uses the same values as [campaign request](campaign-request.md).
 
+`timestamps.started_at` is absent until campaign execution starts. `timestamps.terminal_at` is
+required for a terminal campaign and absent otherwise.
+
 Defined `status` values:
 
+- `accepted`: admitted durably, but campaign execution has not started;
 - `running`: admitted and being bisected;
-- `verifying`: bisection produced a candidate result and verification is running;
 - `completed`: campaign reached a normal final outcome;
 - `failed`: campaign cannot continue because of an unrecoverable orchestration, configuration, or
   execution-contract problem.
+
+The optional Verifier extension may additionally expose `verifying` while post-search verification
+is running.
 
 ### `steps`
 

@@ -47,15 +47,16 @@ store. The state store keeps durable references needed for resume, audit, and BC
 
 Campaign status values are:
 
+- `accepted`: admitted durably, but campaign execution has not started;
 - `running`: admitted and being bisected;
-- `verifying`: bisection produced a candidate result and verification is running;
 - `completed`: campaign reached a normal final outcome;
 - `failed`: campaign cannot continue because of an unrecoverable orchestration, configuration, or
   execution-contract problem.
 
-`completed` and `failed` are terminal.
+When the campaign requests verification, the optional Verifier adds a `verifying` status while
+post-search verification runs.
 
-Terminal campaigns are not mutated back to `running`.
+`completed` and `failed` are terminal and are not moved back to an active state.
 
 ## Step Lifecycle
 
