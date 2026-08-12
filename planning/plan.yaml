@@ -245,3 +245,23 @@ phases:
           - commit-selector/build-the-commit-selector-boundary.md
           - decision-engine/implement-unit-test-qualification-check.md
 
+  - phase: 8
+    goal: "Store a selected candidate and run one BTO plan to a final result"
+    tasks:
+      bco/store-and-apply-commit-selector-results.md:
+        stream: "BCO"
+        title: "Store and apply Commit selector results"
+        priority: high
+        delivers: "Stored selection and application of the next candidate"
+        depends_on:
+          - bco/persist-steps-and-attempts.md
+          - commit-selector/implement-standard-bisect.md
+      bto/execute-one-plan.md:
+        stream: "BTO"
+        title: "Execute one plan"
+        priority: high
+        delivers: "Backend execution and a final result for one BTO plan"
+        depends_on:
+          - bto/accept-build-test-plan.md
+          - bto/load-execution-compositions.md
+          - execution-adapters/map-backend-results-to-plan-outcomes.md
