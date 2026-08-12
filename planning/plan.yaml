@@ -35,3 +35,36 @@ phases:
         depends_on: []
 
   - phase: 3
+    goal: "Build BCO and BTO REST services that accept one CR and one build-test plan"
+    tasks:
+      bco/create-the-bco-service-and-store.md:
+        stream: "BCO"
+        title: "Create the BCO service, store, and REST API"
+        priority: high
+        delivers: "BCO REST service bootstrap, isolated store initialization, and startup/isolation tests"
+        depends_on:
+          - design-and-docs/define-bco-oapi-spec.md
+          - design-and-docs/select-imp-env.md
+      bto/create-bto-svc-and-store.md:
+        stream: "BTO"
+        title: "Create the BTO service, store, and REST API"
+        priority: high
+        delivers: "BTO REST service bootstrap, isolated store initialization, and startup/isolation tests"
+        depends_on:
+          - design-and-docs/define-bto-oapi-spec.md
+          - design-and-docs/select-imp-env.md
+      bco/accept-cr.md:
+        stream: "BCO"
+        title: "Accept a CR"
+        priority: high
+        delivers: "A stored campaign and `campaign_ref` from the BCO REST API"
+        depends_on:
+          - bco/create-the-bco-service-and-store.md
+      bto/accept-build-test-plan.md:
+        stream: "BTO"
+        title: "Accept build-test plan"
+        priority: high
+        delivers: "A stored BTO plan and plan-submission acknowledgement"
+        depends_on:
+          - bto/create-bto-svc-and-store.md
+
