@@ -1,0 +1,37 @@
+version: 1
+
+phases:
+  - phase: 1
+    goal: "Select the runtime and dev toolchain all later tasks use"
+    tasks:
+      design-and-docs/select-imp-env.md:
+        stream: "Design&Docs"
+        title: "Select the dev env"
+        priority: high
+        delivers: "Approved runtime and dev toolchain in `docs/imp-env.md`"
+        depends_on: []
+
+  - phase: 2
+    goal: "Define the unit-test CR fields and the two service APIs so service implementation can start"
+    tasks:
+      design-and-docs/define-unit-test-cr-fields.md:
+        stream: "Design&Docs"
+        title: "Define unit-test CR fields"
+        priority: high
+        delivers: "Defined unit-test scope in CRs"
+        depends_on: []
+      design-and-docs/define-bco-oapi-spec.md:
+        stream: "Design&Docs"
+        title: "Define BCO OpenAPI spec"
+        priority: high
+        delivers: "OpenAPI operations for CR submission and campaign reads"
+        depends_on:
+          - design-and-docs/define-unit-test-cr-fields.md
+      design-and-docs/define-bto-oapi-spec.md:
+        stream: "Design&Docs"
+        title: "Define BTO OpenAPI spec"
+        priority: high
+        delivers: "OpenAPI operation for build-test plan submission"
+        depends_on: []
+
+  - phase: 3
