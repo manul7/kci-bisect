@@ -80,3 +80,75 @@ phases:
           - bco/accept-cr.md
           - bto/accept-build-test-plan.md
 
+  - phase: 5
+    goal: "Define the execution inputs and build the boundaries and stored state the first round needs"
+    tasks:
+      design-and-docs/select-first-execution-backend.md:
+        stream: "Design&Docs"
+        title: "Select the first execution backend"
+        priority: high
+        delivers: "A selected first build-test backend with its composition, settings, and outcome map"
+        depends_on: []
+      design-and-docs/define-bto-result-lookup-behavior.md:
+        stream: "Design&Docs"
+        title: "Define BTO result lookup behavior"
+        priority: high
+        delivers: "Defined BTO lookup responses and BCO handling"
+        depends_on:
+          - design-and-docs/define-bto-oapi-spec.md
+      design-and-docs/select-unit-test-result-input.md:
+        stream: "Design&Docs"
+        title: "Select unit-test result input"
+        priority: high
+        delivers: "Defined BTO output used for unit-test observation"
+        depends_on:
+          - design-and-docs/define-unit-test-cr-fields.md
+      design-and-docs/define-evidence-storage.md:
+        stream: "Design&Docs"
+        title: "Define evidence storage"
+        priority: high
+        delivers: "Defined owner and shape of stored decision evidence"
+        depends_on: []
+      design-and-docs/document-source-repository-scope.md:
+        stream: "Design&Docs"
+        title: "Document the source-repository scope"
+        priority: medium
+        delivers: "A recorded public-repository scope statement in the architecture"
+        depends_on: []
+      bco/persist-campaign-lifecycle-and-membership.md:
+        stream: "BCO"
+        title: "Persist campaign lifecycle and membership"
+        priority: high
+        delivers: "Stored CRs, campaign lifecycle state, and trigger membership"
+        depends_on:
+          - bco/accept-cr.md
+      bto/load-execution-compositions.md:
+        stream: "BTO"
+        title: "Load execution compositions"
+        priority: high
+        delivers: "Configured planner, builder, and tester roles for a composition"
+        depends_on:
+          - bto/create-bto-svc-and-store.md
+      commit-selector/build-the-commit-selector-boundary.md:
+        stream: "Commit selector"
+        title: "Build the Commit selector boundary"
+        priority: high
+        delivers: "A stateless Commit selector service boundary for BCO"
+        depends_on:
+          - design-and-docs/select-imp-env.md
+      results-analyzer/implement-the-results-analyzer-contract.md:
+        stream: "Results Analyzer"
+        title: "Implement the Results Analyzer contract"
+        priority: high
+        delivers: "A backend-independent boundary from plan output to decision evidence"
+        depends_on:
+          - design-and-docs/select-imp-env.md
+      execution-adapters/translate-plan-requests-for-the-execution-backend.md:
+        stream: "Execution adapters"
+        title: "Translate plan requests for the execution backend"
+        priority: high
+        delivers: "Backend-specific execution requests without leaking backend syntax"
+        depends_on:
+          - bto/accept-build-test-plan.md
+          - design-and-docs/select-first-execution-backend.md
+
