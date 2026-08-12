@@ -68,3 +68,15 @@ phases:
         depends_on:
           - bto/create-bto-svc-and-store.md
 
+  - phase: 4
+    goal: "Connect BCO to BTO"
+    tasks:
+      bco/connect-to-bto-plan-submission.md:
+        stream: "BCO"
+        title: "Connect BCO to BTO plan submission"
+        priority: high
+        delivers: "BCO plan submission through the BTO REST API"
+        depends_on:
+          - bco/accept-cr.md
+          - bto/accept-build-test-plan.md
+
