@@ -201,3 +201,47 @@ phases:
         depends_on:
           - execution-adapters/translate-plan-requests-for-the-execution-backend.md
 
+  - phase: 7
+    goal: "Complete each component's contract result and run the components together in the test harness"
+    tasks:
+      bco/persist-evidence-decisions-and-final-records.md:
+        stream: "BCO"
+        title: "Persist evidence, decisions, and final records"
+        priority: high
+        delivers: "Stored evidence, decisions, and terminal campaign records"
+        depends_on:
+          - bco/persist-steps-and-attempts.md
+          - design-and-docs/define-evidence-storage.md
+      commit-selector/implement-standard-bisect.md:
+        stream: "Commit selector"
+        title: "Implement standard bisect"
+        priority: high
+        delivers: "Deterministic candidate selection and terminal bisect results"
+        depends_on:
+          - commit-selector/prepare-source-history-for-selection.md
+      decision-engine/implement-unit-test-decisions.md:
+        stream: "Decision engine"
+        title: "Implement unit-test decisions"
+        priority: high
+        delivers: "Binary unit-test decisions for BCO and Commit selector"
+        depends_on:
+          - decision-engine/implement-unit-test-qualification-check.md
+          - results-analyzer/produce-unit-test-observations.md
+      execution-adapters/map-backend-results-to-plan-outcomes.md:
+        stream: "Execution adapters"
+        title: "Map backend results to plan outcomes"
+        priority: high
+        delivers: "Backend-independent BTO plan outcomes for BCO"
+        depends_on:
+          - execution-adapters/run-combined-build-and-test-execution.md
+      e2e/create-the-component-test-harness.md:
+        stream: "E2E"
+        title: "Create the component test harness"
+        priority: high
+        delivers: "Repeatable component integration tests with controlled dependencies"
+        depends_on:
+          - bco/create-the-bco-service-and-store.md
+          - bto/create-bto-svc-and-store.md
+          - commit-selector/build-the-commit-selector-boundary.md
+          - decision-engine/implement-unit-test-qualification-check.md
+
