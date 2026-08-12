@@ -152,3 +152,52 @@ phases:
           - bto/accept-build-test-plan.md
           - design-and-docs/select-first-execution-backend.md
 
+  - phase: 6
+    goal: "Produce and store the inputs a bisection step needs"
+    tasks:
+      bco/persist-steps-and-attempts.md:
+        stream: "BCO"
+        title: "Persist steps and attempts"
+        priority: high
+        delivers: "Stored candidate, attempt, and plan records"
+        depends_on:
+          - bco/persist-campaign-lifecycle-and-membership.md
+      commit-selector/prepare-source-history-for-selection.md:
+        stream: "Commit selector"
+        title: "Prepare source history for selection"
+        priority: high
+        delivers: "A valid, current source-history view for commit selection"
+        depends_on:
+          - commit-selector/build-the-commit-selector-boundary.md
+          - design-and-docs/document-source-repository-scope.md
+      results-analyzer/produce-unit-test-observations.md:
+        stream: "Results Analyzer"
+        title: "Produce unit-test observations"
+        priority: high
+        delivers: "Structured evidence of the expected unit-test failure signature"
+        depends_on:
+          - design-and-docs/select-unit-test-result-input.md
+          - results-analyzer/implement-the-results-analyzer-contract.md
+      results-analyzer/produce-unit-test-qualification-observations.md:
+        stream: "Results Analyzer"
+        title: "Produce unit-test qualification observations"
+        priority: high
+        delivers: "Structured evidence of whether the requested test ran successfully"
+        depends_on:
+          - design-and-docs/select-unit-test-result-input.md
+          - results-analyzer/implement-the-results-analyzer-contract.md
+      decision-engine/implement-unit-test-qualification-check.md:
+        stream: "Decision engine"
+        title: "Implement the unit-test qualification check"
+        priority: high
+        delivers: "Exclusion of unit-test results that cannot prove the expected regression"
+        depends_on:
+          - results-analyzer/produce-unit-test-qualification-observations.md
+      execution-adapters/run-combined-build-and-test-execution.md:
+        stream: "Execution adapters"
+        title: "Run combined build and test execution"
+        priority: high
+        delivers: "Combined backend build and test execution"
+        depends_on:
+          - execution-adapters/translate-plan-requests-for-the-execution-backend.md
+
