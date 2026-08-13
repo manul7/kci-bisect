@@ -349,3 +349,16 @@ phases:
         delivers: "Campaign progress and final BCO output through the REST API"
         depends_on:
           - bco/persist-evidence-decisions-and-final-records.md
+
+  - phase: 12
+    goal: "Prove the minimal unit-test path E2E"
+    tasks:
+      e2e/test-the-unit-test-campaign-path.md:
+        stream: "E2E"
+        title: "Test the unit-test campaign path"
+        priority: high
+        delivers: "Proof that the unit-test path reaches a culprit E2E"
+        depends_on:
+          - bco/drive-the-campaign-loop.md
+          - bco/expose-campaign-status.md
+          - e2e/create-the-component-test-harness.md
