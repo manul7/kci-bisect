@@ -324,3 +324,28 @@ phases:
         depends_on:
           - bco/run-one-analysis-attempt.md
           - decision-engine/implement-unit-test-decisions.md
+
+  - phase: 11
+    goal: "Drive the campaign to its conclusion and expose its status"
+    tasks:
+      bco/apply-decisions-and-finish-the-campaign.md:
+        stream: "BCO"
+        title: "Apply decisions and finish the campaign"
+        priority: high
+        delivers: "Campaign boundary updates and terminal conclusions from stored decisions"
+        depends_on:
+          - bco/request-one-step-decision.md
+      bco/drive-the-campaign-loop.md:
+        stream: "BCO"
+        title: "Drive the campaign loop"
+        priority: high
+        delivers: "One BCO loop that takes an accepted campaign to its recorded conclusion"
+        depends_on:
+          - bco/apply-decisions-and-finish-the-campaign.md
+      bco/expose-campaign-status.md:
+        stream: "BCO"
+        title: "Expose campaign status"
+        priority: high
+        delivers: "Campaign progress and final BCO output through the REST API"
+        depends_on:
+          - bco/persist-evidence-decisions-and-final-records.md
