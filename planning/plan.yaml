@@ -265,3 +265,32 @@ phases:
           - bto/accept-build-test-plan.md
           - bto/load-execution-compositions.md
           - execution-adapters/map-backend-results-to-plan-outcomes.md
+
+  - phase: 9
+    goal: "Complete one BCO-BTO plan round trip"
+    tasks:
+      bco/submit-one-bto-plan-per-attempt.md:
+        stream: "BCO"
+        title: "Submit one BTO plan per attempt"
+        priority: high
+        delivers: "One BTO plan submission for each step attempt"
+        depends_on:
+          - bco/connect-to-bto-plan-submission.md
+          - bco/store-and-apply-commit-selector-results.md
+          - design-and-docs/select-unit-test-result-input.md
+      bto/keep-completed-plan-results-available-to-bco.md:
+        stream: "BTO"
+        title: "Keep completed plan results available to BCO"
+        priority: high
+        delivers: "Final BTO plan results available for lookup by BCO"
+        depends_on:
+          - bto/execute-one-plan.md
+          - design-and-docs/define-bto-result-lookup-behavior.md
+      bco/read-bto-plan-results.md:
+        stream: "BCO"
+        title: "Read BTO plan results"
+        priority: high
+        delivers: "One BTO plan result stored against its step attempt"
+        depends_on:
+          - bco/submit-one-bto-plan-per-attempt.md
+          - bto/keep-completed-plan-results-available-to-bco.md
