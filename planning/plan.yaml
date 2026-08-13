@@ -294,3 +294,33 @@ phases:
         depends_on:
           - bco/submit-one-bto-plan-per-attempt.md
           - bto/keep-completed-plan-results-available-to-bco.md
+
+  - phase: 10
+    goal: "Turn one plan result into one step decision"
+    tasks:
+      bco/route-bto-plan-outcomes.md:
+        stream: "BCO"
+        title: "Route BTO plan outcomes"
+        priority: high
+        delivers: "Correct routing of BTO outcomes into analysis or campaign failure"
+        depends_on:
+          - bco/persist-evidence-decisions-and-final-records.md
+          - bco/read-bto-plan-results.md
+          - results-analyzer/implement-the-results-analyzer-contract.md
+      bco/run-one-analysis-attempt.md:
+        stream: "BCO"
+        title: "Run one analysis attempt"
+        priority: high
+        delivers: "One evidence record bound to the step attempt that produced it"
+        depends_on:
+          - bco/route-bto-plan-outcomes.md
+          - results-analyzer/produce-unit-test-observations.md
+          - results-analyzer/produce-unit-test-qualification-observations.md
+      bco/request-one-step-decision.md:
+        stream: "BCO"
+        title: "Request one step decision"
+        priority: high
+        delivers: "One durable decision per analyzed campaign step"
+        depends_on:
+          - bco/run-one-analysis-attempt.md
+          - decision-engine/implement-unit-test-decisions.md
