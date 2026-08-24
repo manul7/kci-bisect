@@ -362,3 +362,60 @@ phases:
           - bco/drive-the-campaign-loop.md
           - bco/expose-campaign-status.md
           - e2e/create-the-component-test-harness.md
+
+  - phase: 13
+    goal: "Check the listed MVP contract rules for the unit-test path"
+    tasks:
+      contracts/check-minimal-cr-admission-rules.md:
+        stream: "Contracts"
+        title: "Check minimal CR admission rules"
+        priority: high
+        delivers: "Listed unit-test CR errors are returned without creating campaign or step data"
+        depends_on:
+          - bco/accept-cr.md
+      contracts/check-mvp-bco-output-rules.md:
+        stream: "Contracts"
+        title: "Check MVP BCO output rules"
+        priority: high
+        delivers: "BCO responses for the listed campaign states contain the listed fields, timestamps, step order, and outcomes"
+        depends_on:
+          - bco/apply-decisions-and-finish-the-campaign.md
+          - bco/expose-campaign-status.md
+      contracts/check-mvp-bto-request-and-result-rules.md:
+        stream: "Contracts"
+        title: "Check MVP BTO request and result rules"
+        priority: high
+        delivers: "BTO rejects the listed request errors and returns the listed acknowledgement, lookup, and result fields"
+        depends_on:
+          - bto/keep-completed-plan-results-available-to-bco.md
+      contracts/check-plain-bisect-request-and-result-rules.md:
+        stream: "Contracts"
+        title: "Check plain-bisect request and result rules"
+        priority: high
+        delivers: "Plain bisect rejects the listed bad inputs and returns the listed request IDs and result fields"
+        depends_on:
+          - commit-selector/implement-standard-bisect.md
+      contracts/check-decision-request-and-result-rules.md:
+        stream: "Contracts"
+        title: "Check Decision request and result rules"
+        priority: high
+        delivers: "Decision requests and results use the listed fields, and BCO saves no mismatched result"
+        depends_on:
+          - bco/request-one-step-decision.md
+      contracts/check-unit-test-analyzer-request-and-evidence-rules.md:
+        stream: "Contracts"
+        title: "Check unit-test analyzer request and evidence rules"
+        priority: high
+        delivers: "Results Analyzer rejects the listed non-content inputs and returns the listed unit-test evidence fields and IDs"
+        depends_on:
+          - results-analyzer/produce-unit-test-observations.md
+          - results-analyzer/produce-unit-test-qualification-observations.md
+      contracts/check-unit-test-decision-rules.md:
+        stream: "Contracts"
+        title: "Check unit-test decision rules"
+        priority: high
+        delivers: "Listed unit-test evidence cases return their defined `good`, `bad`, `skip`, or `weak` decision"
+        depends_on:
+          - decision-engine/implement-unit-test-decisions.md
+          - results-analyzer/produce-unit-test-observations.md
+          - results-analyzer/produce-unit-test-qualification-observations.md
