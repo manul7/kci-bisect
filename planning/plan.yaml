@@ -419,3 +419,64 @@ phases:
           - decision-engine/implement-unit-test-decisions.md
           - results-analyzer/produce-unit-test-observations.md
           - results-analyzer/produce-unit-test-qualification-observations.md
+
+  - phase: 14
+    goal: "Define the admission, limit, cancellation, auth, and recovery rules, and run one MVP campaign executor"
+    tasks:
+      bco/run-one-bco-campaign-executor-for-the-mvp.md:
+        stream: "BCO"
+        title: "Run one BCO campaign executor for the MVP"
+        priority: high
+        delivers: "One BCO campaign executor with no overlap in the MVP deployment"
+        depends_on:
+          - bco/create-the-bco-service-and-store.md
+      design-and-docs/define-campaign-stop-limits.md:
+        stream: "Design&Docs"
+        title: "Define campaign stop limits"
+        priority: medium
+        delivers: "Defined campaign limits and their completion outcomes"
+        depends_on:
+          - e2e/test-the-unit-test-campaign-path.md
+      design-and-docs/define-campaign-cancellation-behavior.md:
+        stream: "Design&Docs"
+        title: "Define campaign cancellation behavior"
+        priority: high
+        delivers: "Defined cancellation behavior using the existing campaign and step statuses"
+        depends_on:
+          - design-and-docs/define-bco-oapi-spec.md
+          - e2e/test-the-unit-test-campaign-path.md
+      design-and-docs/define-how-admission-validates-toolchains.md:
+        stream: "Design&Docs"
+        title: "Define configurable toolchain admission"
+        priority: medium
+        delivers: "Defined configurable toolchain rules for campaign admission"
+        depends_on:
+          - bco/accept-cr.md
+      design-and-docs/define-service-authentication.md:
+        stream: "Design&Docs"
+        title: "Define service auth"
+        priority: high
+        delivers: "Defined auth for Trigger, BCO, BTO, and execution calls"
+        depends_on:
+          - design-and-docs/define-bco-oapi-spec.md
+          - design-and-docs/define-bto-oapi-spec.md
+      design-and-docs/define-who-can-access-a-campaign.md:
+        stream: "Design&Docs"
+        title: "Define who can access a campaign"
+        priority: high
+        delivers: "Defined authorization for campaign reads and cancellation"
+        depends_on:
+          - bco/expose-campaign-status.md
+      design-and-docs/define-campaign-execution-profile-source.md:
+        stream: "Design&Docs"
+        title: "Define the campaign execution profile source"
+        priority: high
+        delivers: "Defined provider, format, and loading path for the campaign execution profile"
+        depends_on: []
+      design-and-docs/define-backend-work-recovery.md:
+        stream: "Design&Docs"
+        title: "Define how BTO avoids duplicate backend work"
+        priority: medium
+        delivers: "Defined backend action identity and replay rule for BTO restart recovery"
+        depends_on:
+          - execution-adapters/run-combined-build-and-test-execution.md
