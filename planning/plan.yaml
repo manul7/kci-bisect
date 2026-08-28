@@ -597,3 +597,28 @@ phases:
           - bto/execute-one-plan.md
           - design-and-docs/define-backend-work-recovery.md
 
+  - phase: 17
+    goal: "Test cancellation and BCO recovery"
+    tasks:
+      bco/test-bco-crash-recovery.md:
+        stream: "BCO"
+        title: "Test BCO crash recovery"
+        priority: high
+        delivers: "Evidence that BCO recovery does not duplicate campaign work"
+        depends_on:
+          - bco/run-one-bco-campaign-executor-for-the-mvp.md
+          - bco/create-or-join-equivalent-campaigns-atomically.md
+          - bco/recover-plan-results-after-restart.md
+          - bto/recover-plan-execution-after-restart.md
+      e2e/test-campaign-cancellation.md:
+        stream: "E2E"
+        title: "Test campaign cancellation"
+        priority: high
+        delivers: "Evidence that cancellation remains safe through BTO work and restart"
+        depends_on:
+          - bco/authorize-campaign-access.md
+          - bco/implement-campaign-cancellation.md
+          - bco/recover-plan-results-after-restart.md
+          - bto/recover-plan-execution-after-restart.md
+          - e2e/create-the-component-test-harness.md
+
