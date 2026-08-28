@@ -1,0 +1,22 @@
+name: Publish tasks as issues
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - planning/plan.yaml
+      - planning/tasks/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/publish-tasks.py
+        env:
+          GH_TOKEN: ${{ github.token }}
