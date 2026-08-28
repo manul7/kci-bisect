@@ -480,3 +480,81 @@ phases:
         delivers: "Defined backend action identity and replay rule for BTO restart recovery"
         depends_on:
           - execution-adapters/run-combined-build-and-test-execution.md
+
+  - phase: 15
+    goal: "Enforce the admission, limit, cancellation, and auth rules, and make BTO plan retries safe"
+    tasks:
+      bco/load-the-campaign-execution-profile.md:
+        stream: "BCO"
+        title: "Load the campaign execution profile"
+        priority: high
+        delivers: "A loaded, validated campaign execution profile available to BCO admission"
+        depends_on:
+          - bco/create-the-bco-service-and-store.md
+          - design-and-docs/define-campaign-execution-profile-source.md
+      bco/validate-crs-before-creating-state.md:
+        stream: "BCO"
+        title: "Check requests against deployment capabilities"
+        priority: high
+        delivers: "Requests outside deployment capabilities are rejected before campaign creation"
+        depends_on:
+          - bco/build-trigger-registry-and-authentication.md
+          - bco/load-the-campaign-execution-profile.md
+          - contracts/check-minimal-cr-admission-rules.md
+      bco/validate-toolchains-at-admission.md:
+        stream: "BCO"
+        title: "Use configured toolchain admission rules"
+        priority: medium
+        delivers: "Requests using a toolchain the deployment cannot provide are rejected before campaign creation"
+        depends_on:
+          - design-and-docs/define-how-admission-validates-toolchains.md
+      bco/enforce-campaign-stop-limits.md:
+        stream: "BCO"
+        title: "Enforce campaign stop limits"
+        priority: medium
+        delivers: "Consistent campaign completion when a configured limit is reached"
+        depends_on:
+          - bco/drive-the-campaign-loop.md
+          - bco/run-one-bco-campaign-executor-for-the-mvp.md
+          - design-and-docs/define-campaign-stop-limits.md
+      bco/implement-campaign-cancellation.md:
+        stream: "BCO"
+        title: "Implement campaign cancellation"
+        priority: high
+        delivers: "Safe cancellation that stops work and freezes campaign decisions"
+        depends_on:
+          - bco/drive-the-campaign-loop.md
+          - bco/run-one-bco-campaign-executor-for-the-mvp.md
+          - design-and-docs/define-campaign-cancellation-behavior.md
+      bco/build-trigger-registry-and-authentication.md:
+        stream: "BCO"
+        title: "Authenticate Triggers and load execution settings"
+        priority: high
+        delivers: "Authenticated Trigger identity and execution settings available to campaign admission"
+        depends_on:
+          - bco/create-the-bco-service-and-store.md
+          - design-and-docs/define-service-authentication.md
+      bto/add-idempotent-plan-admission.md:
+        stream: "BTO"
+        title: "Reuse a BTO plan when BCO retries"
+        priority: high
+        delivers: "One BTO plan and one execution when BCO retries the same submission"
+        depends_on:
+          - bto/execute-one-plan.md
+      bto/authenticate-bto-service-calls.md:
+        stream: "BTO"
+        title: "Authenticate BCO calls to BTO"
+        priority: high
+        delivers: "Only authenticated BCO callers can submit or read BTO plans"
+        depends_on:
+          - bco/read-bto-plan-results.md
+          - design-and-docs/define-service-authentication.md
+      execution-adapters/authenticate-backend-calls.md:
+        stream: "Execution adapters"
+        title: "Authenticate BTO calls to the execution backend"
+        priority: medium
+        delivers: "Backend calls carry the credentials the service-auth design defines"
+        depends_on:
+          - design-and-docs/define-service-authentication.md
+          - execution-adapters/run-combined-build-and-test-execution.md
+
