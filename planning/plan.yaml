@@ -558,3 +558,42 @@ phases:
           - design-and-docs/define-service-authentication.md
           - execution-adapters/run-combined-build-and-test-execution.md
 
+  - phase: 16
+    goal: "Authorize campaign access, prevent duplicates, and recover after restart"
+    tasks:
+      bco/authorize-campaign-access.md:
+        stream: "BCO"
+        title: "Authorize campaign access"
+        priority: medium
+        delivers: "Authorized campaign reads and cancellation"
+        depends_on:
+          - bco/build-trigger-registry-and-authentication.md
+          - bco/implement-campaign-cancellation.md
+          - design-and-docs/define-who-can-access-a-campaign.md
+      bco/create-or-join-equivalent-campaigns-atomically.md:
+        stream: "BCO"
+        title: "Create or join equivalent campaigns atomically"
+        priority: high
+        delivers: "One shared campaign for concurrent equivalent requests"
+        depends_on:
+          - bco/persist-campaign-lifecycle-and-membership.md
+          - bco/validate-crs-before-creating-state.md
+          - bco/validate-toolchains-at-admission.md
+      bco/recover-plan-results-after-restart.md:
+        stream: "BCO"
+        title: "Recover plan submissions and results after restart"
+        priority: medium
+        delivers: "Restart-safe recovery of BTO plan submissions and results by BCO"
+        depends_on:
+          - bco/drive-the-campaign-loop.md
+          - bto/add-idempotent-plan-admission.md
+      bto/recover-plan-execution-after-restart.md:
+        stream: "BTO"
+        title: "Recover plan execution after restart"
+        priority: medium
+        delivers: "Restart-safe BTO plan execution"
+        depends_on:
+          - bto/add-idempotent-plan-admission.md
+          - bto/execute-one-plan.md
+          - design-and-docs/define-backend-work-recovery.md
+
